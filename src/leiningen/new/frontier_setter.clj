@@ -18,6 +18,7 @@
         data {:raw-name name
               :name (project-name name)
               :namespace main-ns
+              :sanitized (sanitize-ns name)
               :nested-dirs (name-to-path main-ns)
               :year (year)
               :date (date)}]
@@ -29,4 +30,5 @@
              [".hgignore" (render "hgignore" data)]
              ["README.md" (render "README.md" data)]
              ["src/{{nested-dirs}}.clj" (render "core.clj" data)]
+             ["src/{{sanitized}}/util/dsl.clj" (render "dsl.clj" data)]
              )))
