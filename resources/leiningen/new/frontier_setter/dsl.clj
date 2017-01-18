@@ -4,4 +4,4 @@
 (defmacro defconf
   [& args]
   `(let [m# (hash-map ~@args)]
-     (println m#)))
+     (def ^:dynamic ~'conf m#)))
