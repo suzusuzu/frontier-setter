@@ -31,4 +31,5 @@
              ["README.md" (render "README.md" data)]
              ["src/{{nested-dirs}}.clj" (render "core.clj" data)]
              ["src/{{sanitized}}/util/dsl.clj" (render "dsl.clj" data)]
+             ["src/{{sanitized}}/util/gp.clj" (render "gp.clj" data)]
              )))
