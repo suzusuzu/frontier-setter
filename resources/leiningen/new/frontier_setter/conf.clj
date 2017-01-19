@@ -1,6 +1,6 @@
 (defconf
   :leaf-node ['x 'natulal-number]                           ;葉ノードの要素
-  :inner-node [+ - *]                                       ;内部ノードの要素
+  :inner-node ['+ '- '*]                                       ;内部ノードの要素
   :population 100                                           ;個体数
   :limit-generation 'INF                                    ;最大世代
   :island-num 10                                            ;島の数
