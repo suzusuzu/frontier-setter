@@ -1,4 +1,5 @@
 (ns {{sanitized}}.util.gp
+  (:require [clojure.math.combinatorics :as combo])
   (:gen-class))
 
 (defn random-tree
@@ -47,19 +48,20 @@
       (rand-nth (get-node-indexes tree)))
 
 (defn mutate
-      [leafs inners tree]
+      [leafs inners tree depth]
       (let [rand-index (random-node-index tree)]
            (letfn [(f
                      [tree' index]
                      (cond
-                       (= index rand-index) (random-tree leafs inners 10)
+                       (= index rand-index) (random-tree leafs inners depth)
                        (or (not (list? tree'))
                            (empty? tree')) tree'
-                       :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree []) )))
+                       :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity]) )))
 
 (defn cross
       [tree1 tree2]
-      (let [rand-index1 (random-node-index tree1) rand-index2 (random-node-index tree2)]
+      (let [rand-index1 (random-node-index tree1)
+            rand-index2 (random-node-index tree2)]
            (letfn [(f
                      [tree subtree index rand-index]
                      (cond
@@ -67,5 +69,6 @@
                        (or (not (list? tree))
                            (empty? tree)) tree
                        :else (cons (f (first tree) subtree (conj index 'first) rand-index) (f (rest tree) subtree (conj index 'rest) rand-index))))]
-                  [(f tree1 '(nil) [] rand-index1 ) (f tree2 '(nil) [] rand-index2 )])))
+                  [(f tree1 (get-node tree2 rand-index2) ['identity] rand-index1 ) (f tree2 (get-node tree1 rand-index1) ['identity] rand-index2 )])))
+
 
