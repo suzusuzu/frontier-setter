@@ -3,13 +3,18 @@
 
 (defn random-tree
       [leafs inners depth]
-      (letfn [(f
-                [depth']
-                (if (or (zero? depth')
-                        (zero? (rand-int 2)))
-                  (rand-nth leafs)
-                  (list (rand-nth inners) (f (dec depth')) (f (dec depth')))))]
-             (f depth)))
+      (let [leafs-num (count leafs)
+            inners-num (count inners)
+            sum (+ (count leafs) (count inners))]
+           (letfn [(f
+                     [depth']
+                     (if (zero? (dec depth'))
+                       (rand-nth leafs)
+                       (if (< (rand-int sum) leafs-num)
+                         (rand-nth leafs)
+                         (list (rand-nth inners) (f (dec depth')) (f (dec depth'))))))] (f depth)))
+      )
+
 
 (defn get-node
       [tree index]
