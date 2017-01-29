@@ -68,6 +68,10 @@
       [tree]
       (rand-nth (get-node-indexes tree)))
 
+(defn random-inner-node-index
+      [tree]
+      (rand-nth (get-inner-node-indexes tree)))
+
 (defn mutate
       [leafs inners tree depth]
       (let [rand-index (random-node-index tree)]
@@ -92,3 +96,23 @@
                        :else (cons (f (first tree) subtree (conj index 'first) rand-index) (f (rest tree) subtree (conj index 'rest) rand-index))))]
                   [(f tree1 (get-node tree2 rand-index2) ['identity] rand-index1 ) (f tree2 (get-node tree1 rand-index1) ['identity] rand-index2 )])))
 
+(defn not-same-shuffle
+      [list]
+      (loop [list' (shuffle list)]
+            (if (= list list')
+              (recur (shuffle list))
+              list'))
+      )
+
+
+(defn inverse
+      [tree]
+      (let [rand-index (random-inner-node-index tree)]
+           (letfn [(f
+                     [tree' index]
+                     (cond
+                       (= index rand-index) (cons (first tree') (apply list (not-same-shuffle (rest tree'))))
+                       (or (not (list? tree'))
+                           (empty? tree')) tree'
+                       :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity])))
+      )
