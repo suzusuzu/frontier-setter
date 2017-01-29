@@ -43,6 +43,27 @@
                   (do (f ['identity])
                       @res-list))))
 
+
+(defn get-inner-node-indexes
+  [tree]
+  (let [res-list (atom [['identity]])]
+    (letfn [(get-indexes
+              [child-num index]
+              (loop [child-num' child-num conjs []]
+                (if (<= child-num' 1)
+                  (conj conjs (apply vector (concat index (conj (apply vector (take child-num' (repeat 'rest))) 'first))))
+                  (recur (dec child-num') (conj conjs (apply vector (concat index (conj (apply vector (take child-num' (repeat 'rest))) 'first))))))))
+            (f
+              [index]
+              (if (list? (get-node tree index))
+                (let [child-num (count (rest (get-node tree index)))]
+                      (let [indexes (apply vector (filter #(and (list? (get-node tree %)) (> (count (rest (get-node tree %))) 0))  (get-indexes child-num index)))]
+                           (do (swap! res-list concat indexes)
+                               (doall (map f indexes)))))
+                     ))]
+           (do (f ['identity])
+                  @res-list))))
+
 (defn random-node-index
       [tree]
       (rand-nth (get-node-indexes tree)))
@@ -70,5 +91,4 @@
                            (empty? tree)) tree
                        :else (cons (f (first tree) subtree (conj index 'first) rand-index) (f (rest tree) subtree (conj index 'rest) rand-index))))]
                   [(f tree1 (get-node tree2 rand-index2) ['identity] rand-index1 ) (f tree2 (get-node tree1 rand-index1) ['identity] rand-index2 )])))
-
 
