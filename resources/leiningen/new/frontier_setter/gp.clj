@@ -116,3 +116,8 @@
                            (empty? tree')) tree'
                        :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity])))
       )
+
+(defn generate-island
+  [num leafs inners depth]
+  (apply vector (take num (repeatedly #(random-tree leafs inners depth)))))
+
