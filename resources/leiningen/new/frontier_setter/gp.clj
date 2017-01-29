@@ -92,3 +92,12 @@
                        :else (cons (f (first tree) subtree (conj index 'first) rand-index) (f (rest tree) subtree (conj index 'rest) rand-index))))]
                   [(f tree1 (get-node tree2 rand-index2) ['identity] rand-index1 ) (f tree2 (get-node tree1 rand-index1) ['identity] rand-index2 )])))
 
+
+(defn get-formula-error
+      [formula, value-pairs]
+      "expand formula as code"
+      (let [eval-formula (eval (list 'fn '[x] formula))]
+      (reduce + (map (fn [[x y]] 
+           (Math/abs 
+           	     (- (eval-formula x) y)))
+                     value-pairs))))
