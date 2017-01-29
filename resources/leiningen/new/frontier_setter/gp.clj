@@ -11,8 +11,9 @@
                      [depth']
                      (if (zero? (dec depth'))
                        (rand-nth leafs)
-                       (if (< (rand-int sum) leafs-num)
-                         (rand-nth leafs)
+                       (if (and (< (rand-int sum) leafs-num)
+                               (>= (rand-int depth) (dec depth')))
+                           (rand-nth leafs)
                          (list (rand-nth inners) (f (dec depth')) (f (dec depth'))))))] (f depth)))
       )
 
