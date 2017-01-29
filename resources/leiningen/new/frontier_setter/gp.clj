@@ -121,3 +121,31 @@
   [num leafs inners depth]
   (apply vector (take num (repeatedly #(random-tree leafs inners depth)))))
 
+
+(defn tree-roulette
+  [island evaluation-func]
+  (apply vector (reduce concat [] (map #(take (evaluation-func %) (repeat %)) island)))
+  )
+
+(defn evolution
+  [island cross-p mutation-p inversion-p evaluation-func leafs inners depth]
+  (let [island-num (count island)
+        evolution-roulette (concat
+                             (take (* cross-p 10) (repeat :cross))
+                             (take (* mutation-p 10) (repeat :mutation))
+                             (take (* inversion-p 10) (repeat :inversion))
+                             (take (- 1000 (* 10 (+ cross-p mutation-p inversion-p))) (repeat :id)))
+        tree-roulette (tree-roulette island evaluation-func)]
+    (loop [island' []]
+      (if (>= (count island') island-num)
+        island'
+        (let [rand-f (rand-nth evolution-roulette)]
+          (cond
+            (= rand-f :cross) (if (> (- island-num (count island')) 1)
+                                (recur (apply vector (concat island' (cross (rand-nth tree-roulette) (rand-nth tree-roulette)))))
+                                (recur (conj island' (rand-nth (cross (rand-nth tree-roulette) (rand-nth tree-roulette))))))
+            (= rand-f :mutation) (recur (conj island' (mutate leafs inners (rand-nth tree-roulette) depth)))
+            (= rand-f :inversion) (recur (conj island (inverse (rand-nth tree-roulette))))
+            :else (recur (conj island (rand-nth tree-roulette)))))))))
+
+
