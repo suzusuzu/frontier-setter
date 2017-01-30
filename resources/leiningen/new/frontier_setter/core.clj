@@ -1,5 +1,6 @@
 (ns {{namespace}}
   (:use [{{sanitized}}.util.dsl])
+  (:use [{{sanitized}}.util.gp])
   (:gen-class))
 
 (declare conf)
