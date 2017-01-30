@@ -99,15 +99,17 @@
 
 (defn not-same-shuffle
       [list]
-      (loop [list' (shuffle list)]
-            (if (= list list')
-              (recur (shuffle list))
-              list'))
-      )
-
+      (if (reduce #(and %1 %2) (map #(= (first list) %) list))
+        list
+        (loop [list' (shuffle list)]
+              (if (= list list')
+                (recur (shuffle list))
+                list'))))
 
 (defn inverse
       [tree]
+      (if-not (list? tree)
+        tree
       (let [rand-index (random-inner-node-index tree)]
            (letfn [(f
                      [tree' index]
@@ -115,7 +117,7 @@
                        (= index rand-index) (cons (first tree') (apply list (not-same-shuffle (rest tree'))))
                        (or (not (list? tree'))
                            (empty? tree')) tree'
-                       :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity])))
+                       :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity]))))
       )
 
 (defn generate-island
@@ -125,13 +127,12 @@
 
 (defn tree-roulette
   [island evaluation-func]
-  (apply vector (reduce concat [] (map #(take (evaluation-func %) (repeat %)) island)))
+  (apply vector (reduce concat [] (pmap #(take (evaluation-func %) (repeat %)) island)))
   )
 
 (defn evolution
-  [island cross-p mutation-p inversion-p evaluation-func leafs inners depth]
-  (let [island-num (count island)
-        evolution-roulette (concat
+  [island island-num cross-p mutation-p inversion-p evaluation-func leafs inners depth]
+  (let [evolution-roulette (concat
                              (take (* cross-p 10) (repeat :cross))
                              (take (* mutation-p 10) (repeat :mutation))
                              (take (* inversion-p 10) (repeat :inversion))
@@ -148,5 +149,3 @@
             (= rand-f :mutation) (recur (conj island' (mutate leafs inners (rand-nth tree-roulette) depth)))
             (= rand-f :inversion) (recur (conj island (inverse (rand-nth tree-roulette))))
             :else (recur (conj island (rand-nth tree-roulette)))))))))
-
-
