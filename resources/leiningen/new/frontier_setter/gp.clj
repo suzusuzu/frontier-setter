@@ -156,5 +156,5 @@
                                 (recur (apply vector (concat island' (cross (rand-nth tree-roulette) (rand-nth tree-roulette)))))
                                 (recur (conj island' (rand-nth (cross (rand-nth tree-roulette) (rand-nth tree-roulette))))))
             (= rand-f :mutation) (recur (conj island' (mutate leafs inners (rand-nth tree-roulette) depth)))
-            (= rand-f :inversion) (recur (conj island (inverse (rand-nth tree-roulette))))
-            :else (recur (conj island (rand-nth tree-roulette)))))))))
+            (= rand-f :inversion) (recur (conj island' (inverse (rand-nth tree-roulette))))
+            :else (recur (conj island' (rand-nth tree-roulette)))))))))
