@@ -45,7 +45,7 @@
                                  (recur (dec child-num') (conj conjs (apply vector (concat index (conj (apply vector (take child-num' (repeat 'rest))) 'first))))))))
                    (f
                      [index]
-                     (if (list? (get-node tree index))
+                     (if (seq? (get-node tree index))
                      (let [child-num (count (rest (get-node tree index)))]
                           (let [indexes (get-indexes child-num index)]
                                (do (swap! res-list concat indexes)
@@ -65,7 +65,7 @@
                   (recur (dec child-num') (conj conjs (apply vector (concat index (conj (apply vector (take child-num' (repeat 'rest))) 'first))))))))
             (f
               [index]
-              (if (list? (get-node tree index))
+              (if (seq? (get-node tree index))
                 (let [child-num (count (rest (get-node tree index)))]
                       (let [indexes (apply vector (filter #(and (list? (get-node tree %)) (> (count (rest (get-node tree %))) 0))  (get-indexes child-num index)))]
                            (do (swap! res-list concat indexes)
@@ -89,7 +89,7 @@
                      [tree' index]
                      (cond
                        (= index rand-index) (random-tree leafs inners depth)
-                       (or (not (list? tree'))
+                       (or (not (seq? tree'))
                            (empty? tree')) tree'
                        :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity]) )))
 
@@ -101,7 +101,7 @@
                      [tree subtree index rand-index]
                      (cond
                        (= index rand-index) subtree
-                       (or (not (list? tree))
+                       (or (not (seq? tree))
                            (empty? tree)) tree
                        :else (cons (f (first tree) subtree (conj index 'first) rand-index) (f (rest tree) subtree (conj index 'rest) rand-index))))]
                   [(f tree1 (get-node tree2 rand-index2) ['identity] rand-index1 ) (f tree2 (get-node tree1 rand-index1) ['identity] rand-index2 )])))
@@ -124,7 +124,7 @@
                      [tree' index]
                      (cond
                        (= index rand-index) (cons (first tree') (apply list (not-same-shuffle (rest tree'))))
-                       (or (not (list? tree'))
+                       (or (not (seq? tree'))
                            (empty? tree')) tree'
                        :else (cons (f (first tree') (conj index 'first)) (f (rest tree') (conj index 'rest)))))] (f tree ['identity]))))
       )
