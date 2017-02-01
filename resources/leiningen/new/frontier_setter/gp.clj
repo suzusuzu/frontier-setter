@@ -2,6 +2,9 @@
   (:require [clojure.math.combinatorics :as combo])
   (:gen-class))
 
+(defn n-args [f]
+      (-> f class .getDeclaredMethods first .getParameterTypes alength))
+
 (defn random-tree
       [leafs inners depth]
       (let [leafs-num (count leafs)
@@ -14,7 +17,13 @@
                        (if (and (< (rand-int sum) leafs-num)
                                (>= (rand-int depth) (dec depth')))
                            (rand-nth leafs)
-                         (list (rand-nth inners) (f (dec depth')) (f (dec depth'))))))] (f depth)))
+                           (let [inner-node (rand-nth inners)
+                                 arg-num (n-args inner-node)]
+                                (case arg-num
+                                      1 (list inner-node (f (dec depth')))
+                                      2 (list inner-node (f (dec depth')) (f (dec depth')))
+                                      3 (list inner-node (f (dec depth')) (f (dec depth')) (f (dec depth')))
+                                      )))))] (f depth)))
       )
 
 
@@ -131,13 +140,13 @@
   )
 
 (defn evolution
-  [island island-num cross-p mutation-p inversion-p evaluation-func leafs inners depth]
+  [island island-num cross-p mutation-p inversion-p evaluation-func select-roulette leafs inners depth]
   (let [evolution-roulette (concat
                              (take (* cross-p 10) (repeat :cross))
                              (take (* mutation-p 10) (repeat :mutation))
                              (take (* inversion-p 10) (repeat :inversion))
                              (take (- 1000 (* 10 (+ cross-p mutation-p inversion-p))) (repeat :id)))
-        tree-roulette (tree-roulette island evaluation-func)]
+        tree-roulette (select-roulette island evaluation-func)]
     (loop [island' []]
       (if (>= (count island') island-num)
         island'
